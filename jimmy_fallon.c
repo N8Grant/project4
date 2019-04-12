@@ -6,22 +6,18 @@
 
 // Prototypes
 void* phonecall(void* vargp);
+void* queue(void* vargp);
 int next_id = 0;
 int NUM_CALLERS = 10;
-sem_t operators;
 
 
-int main() {
-
-  sem_init(&operators, 0, 3);
-
-  while (NUM_CALLERS > 0) {
-    printf("here\n");
-    pthread_t tid;
-    pthread_create(&tid, NULL, phonecall, NULL);
-    sleep(2);
-    NUM_CALLERS--;
+int main(int argc, char **argv) {
+  if (argc == 2) {
+    NUM_CALLERS = atoi(argv[1]);
   }
+
+  pthread_t tid;
+  pthread_create(&tid, NULL, queue, NULL);
 
   return 0;
 }
@@ -33,7 +29,7 @@ void* queue(void* vargp) {
     pthread_create(&calls[i], NULL, phonecall, NULL);
   }
   for (int i = 0; i < NUM_CALLERS; i++) {
-    pthread_join();
+    pthread_join(calls[i], NULL);
   }
 
 }
@@ -47,8 +43,25 @@ void* phonecall(void* vargp) {
   static sem_t operators;
   int id = next_id;
 
+  printf("Attempt to connect has been made\n");
+  if (connected==NUM_LINES) {
+
+  }
+  else {
+    if (sem_getvalue()) {
+
+    }
+    else {
+      connected++;
+      //exit critical section
+    }
+  }
   sem_wait(&operators);
-  connected++;
+  printf("Order is being taken by an operator\n");
+  sleep(2);
+  printf("Order is complete!!\n");
+  connected--;
+  print("Call has ended...\n");
   next_id++;
   // Ticket ordering
   printf("Person: %i bought a ticket \n", id);
