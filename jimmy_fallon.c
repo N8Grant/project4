@@ -7,11 +7,12 @@
 // Prototypes
 void* phonecall(void* vargp);
 int next_id = 0;
+int NUM_CALLERS = 10;
 sem_t operators;
 
 
 int main() {
-  int NUM_CALLERS = 10;
+
   sem_init(&operators, 0, 3);
 
   while (NUM_CALLERS > 0) {
@@ -26,7 +27,14 @@ int main() {
 }
 
 void* queue(void* vargp) {
-  pthread_t calls[];
+  pthread_t calls[NUM_CALLERS];
+
+  for (int i=0; i < NUM_CALLERS; i++) {
+    pthread_create(&calls[i], NULL, phonecall, NULL);
+  }
+  for (int i = 0; i < NUM_CALLERS; i++) {
+    pthread_join();
+  }
 
 }
 
